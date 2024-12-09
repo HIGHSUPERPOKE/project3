@@ -8,6 +8,10 @@ public class Player {
         wins = 0;
     }
 
+    public Player(){
+        wins = 0;
+    }
+
 
     public String getName() {
         return name;

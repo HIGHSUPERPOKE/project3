@@ -47,6 +47,8 @@ public class GameLogic {
 
     private Scanner scan;
     private String name;
+    private Money money;
+    private int bet;
 
 
 
@@ -60,6 +62,7 @@ public class GameLogic {
      */
     public GameLogic() {
         scan = new Scanner(System.in);
+        money = new Money();
     }
 
 
@@ -107,6 +110,7 @@ public class GameLogic {
             System.out.println("Dealer draws a card value of " + card);
             System.out.println("BUST");
             System.out.println("Player wins!");
+            money.wonBet(bet);
         }else{
             System.out.println("Dealer draws a card value of " + card);
         }
@@ -125,6 +129,7 @@ public class GameLogic {
             System.out.println("Player draws a card value of " + card);
             System.out.println("BUST");
             System.out.println("Dealer wins!");
+            money.lostBet(bet);
         }else{
             System.out.println("Player draws a card value of " + card);
         }
@@ -134,9 +139,16 @@ public class GameLogic {
 
 
     public void rounds(){
+        int roundsPlayed = 0;
+        bet = 0;
         String playAgain = "yes";
+
         Player player = new Player(name);
+
         while(playAgain.equals("yes")){
+            System.out.print("How much do you wanna bet? ");
+            bet = scan.nextInt();
+            scan.nextLine();
             playerTotal = 0;
             dealerTotal = 0;
             System.out.println("Drawing two cards for dealer");
@@ -149,8 +161,10 @@ public class GameLogic {
             if (playerTotal == 21) {
                 System.out.println("Player wins!");
                 player.incrementScore();
+                money.wonBet(bet);
             } else if (dealerTotal == 21) {
                 System.out.println("Dealer wins!");
+                money.lostBet(bet);
             } else {
                 System.out.println("Player hand value = " + getPlayerTotal());
                 System.out.print("Do you want to hit? ");
@@ -167,6 +181,7 @@ public class GameLogic {
                 if (getPlayerTotal() == 21) {
                     System.out.println("Player wins");
                     player.incrementScore();
+                    money.wonBet(bet);
                 }
                 if (getPlayerTotal() < 21) {
                     System.out.print("Do you want to stand? ");
@@ -175,13 +190,22 @@ public class GameLogic {
                         while (dealerTotal < 17) {
                             stand();
                         }
+                        if(dealerTotal == 21){
+                            System.out.println("Dealer Wins!");
+                            money.lostBet(bet);
+                        }
+                        if(dealerTotal > 21){
+                            player.incrementScore();
+                        }
                         if (dealerTotal < 21) {
                             System.out.println("Dealer hand value is " + dealerTotal);
                             if (playerTotal > dealerTotal) {
                                 System.out.println("Player Wins!");
                                 player.incrementScore();
+                                money.wonBet(bet);
                             } else if (dealerTotal > playerTotal) {
                                 System.out.println("Dealer Wins!");
+                                money.lostBet(bet);
                             } else {
                                 System.out.println("TIE");
                             }
@@ -189,9 +213,14 @@ public class GameLogic {
                     }
                 }
             }
-            System.out.println(player.getName() + " has " + player.getWins() + " number of wins");
+            if(money.getTotalProfit() > 0) {
+                System.out.println(player.getName() + " has " + player.getWins() + " number of wins and has won " + money.getTotalProfit() + " dollars");
+            }else{
+                System.out.println(player.getName() + " has " + player.getWins() + " number of wins and has lost " + money.getTotalProfit() + " dollars");
+            }
             System.out.print("Do you want to play again? " );
             playAgain = scan.nextLine();
+            roundsPlayed++;
         }
     }
 
@@ -207,9 +236,15 @@ public class GameLogic {
         System.out.println("Welcome to BlackJack!");
         System.out.print("Enter your name: ");
         name = scan.nextLine();
+        if(name.length() == 0){
+            System.out.println("Please enter a name?");
+            name = scan.nextLine();
+        }
 
 
         rounds();
+
+        System.out.println("Thank you for playing BLACKJACK!");
     }
 
 
