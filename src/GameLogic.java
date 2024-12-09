@@ -136,8 +136,10 @@ public class GameLogic {
     }
 
 
-
-
+    /**
+     * How many rounds are played
+     * Where most of the game logic is
+     */
     public void rounds(){
         int roundsPlayed = 0;
         bet = 0;
